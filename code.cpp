@@ -1,45 +1,113 @@
 #include <iostream>
+#include <queue>
 #include <vector>
+#include <list>
 #include <string>
-#include <ctime>
-#include <iomanip>
 
-class Message {
-private:
-    std::string sender;
-    std::string content;
-    std::time_t timestamp;
-public:
-    Message(const std::string& sender, const std::string& content)
-        : sender(sender), content(content), timestamp(std::time(nullptr)) {}
+using namespace std;
 
-    void display() const {
-        std::cout << "[" << std::put_time(std::localtime(&timestamp), "%Y-%m-%d %H:%M:%S") << "] "
-                  << sender << ": " << content << std::endl;
+// Structure for Driver
+struct Driver {
+    string name;
+    int distance; // distance from rider in meters
+    double rating; // driver rating (1.0 to 5.0)
+
+    Driver(string n, int d, double r) : name(n), distance(d), rating(r) {}
+};
+
+// Comparator for priority queue: prioritize by nearest distance, then higher rating
+struct DriverCompare {
+    bool operator()(const Driver& a, const Driver& b) {
+        if (a.distance == b.distance)
+            return a.rating < b.rating; // higher rating first if distances are same
+        return a.distance > b.distance; // nearer distance first
     }
 };
 
-class Chat {
+// Structure for Rider
+struct Rider {
+    string name;
+    string location;
+
+    Rider(string n, string l) : name(n), location(l) {}
+};
+
+// Structure for Ride History Entry
+struct Ride {
+    string riderName;
+    string driverName;
+
+    Ride(string r, string d) : riderName(r), driverName(d) {}
+};
+
+class RideSharingSimulator {
 private:
-    std::vector<Message> messages;
+    queue<Rider> riderQueue;
+    priority_queue<Driver, vector<Driver>, DriverCompare> driverQueue;
+    list<Ride> rideHistory;
+
 public:
-    void sendMessage(const std::string& sender, const std::string& content) {
-        messages.emplace_back(sender, content);
+    // Add a rider request
+    void addRider(const string& name, const string& location) {
+        riderQueue.push(Rider(name, location));
+        cout << "Rider " << name << " added to queue.\n";
     }
-    void displayChat() const {
-        std::cout << "Chat History:" << std::endl;
-        for (const auto& message : messages)
-            message.display();
+
+    // Add a driver availability
+    void addDriver(const string& name, int distance, double rating) {
+        driverQueue.push(Driver(name, distance, rating));
+        cout << "Driver " << name << " added to available drivers.\n";
+    }
+
+    // Match driver to rider
+    void dispatch() {
+        if (riderQueue.empty()) {
+            cout << "No riders in queue.\n";
+            return;
+        }
+        if (driverQueue.empty()) {
+            cout << "No drivers available to dispatch.\n";
+            return;
+        }
+        Rider rider = riderQueue.front();
+        riderQueue.pop();
+
+        Driver driver = driverQueue.top();
+        driverQueue.pop();
+
+        // Log ride history
+        rideHistory.push_back(Ride(rider.name, driver.name));
+
+        cout << "Driver " << driver.name << " dispatched to Rider " << rider.name << ".\n";
+    }
+
+    // Show ride history
+    void showRideHistory() {
+        if (rideHistory.empty()) {
+            cout << "No rides yet.\n";
+            return;
+        }
+        cout << "Ride History:\n";
+        for (const auto& ride : rideHistory) {
+            cout << "Rider: " << ride.riderName << " - Driver: " << ride.driverName << "\n";
+        }
     }
 };
 
 int main() {
-    Chat chat;
-    chat.sendMessage("Alice", "Hello, Bob!");
-    chat.sendMessage("Bob", "Hi Alice! How are you?");
-    chat.sendMessage("Alice", "I'm good, thanks! What about you?");
-    chat.sendMessage("Bob", "Doing well, just working on some projects.");
+    RideSharingSimulator simulator;
 
-    chat.displayChat();
+    simulator.addDriver("Pradip", 500, 4.8);
+    simulator.addDriver("Sandip", 300, 4.5);
+    simulator.addDriver("deepak", 300, 4.7);
+
+    simulator.addRider("John", "Downtown");
+    simulator.addRider("Manu", "Airport");
+
+    simulator.dispatch();
+    simulator.dispatch();
+
+    simulator.showRideHistory();
+
     return 0;
 }
