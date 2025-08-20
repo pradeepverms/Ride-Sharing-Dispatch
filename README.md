@@ -1,26 +1,31 @@
-Chat Message History (C++)
+# Ride-Sharing Dispatch Simulator (C++)
 
-A simple C++ project that demonstrates storing and displaying chat messages with timestamps.  
-Built while practicing DSA + file handling** and learning Git/GitHub**.
+A C++ project demonstrating a simple ride-sharing system that assigns drivers to riders using queues and priority queues. Nearest drivers with higher ratings get matched first, and ride history is maintained for every completed trip.
 
+## Features
 
-Features
-- `Message` class with sender, content, and timestamp
-- Print/display messages in a readable format
-- Easy to compile and run on macOS/Linux
+- **Driver assignment based on proximity and rating**
+- **Queues for rider requests and driver dispatches**
+- **Priority queue for optimal driver selection**
+- **Ride history tracking**
+- Easy-to-understand sample code using standard library data structures (queue, priority_queue, list)
 
+## How It Works
 
-Requirements
-- C++17-compatible compiler (e.g., `g++` / clang++)
-- Terminal / shell
+1. Riders request a ride and are placed in a queue.
+2. Drivers become available with their current distance and rating.
+3. The simulator matches the nearest, best-rated driver to each rider using a priority queue.
+4. Ride history is saved and can be displayed.
 
+## Getting Started
 
-Build & Run
+### Requirements
 
-```bash
-g++ -std=c++17 code.cpp -o chatapp
-./chatapp
+- C++11 or newer compiler (g++/clang++)
+- macOS, Linux, or Windows
 
+### How to Compile and Run
 
-Author
-Pradip Kumar Verma
+In your terminal, inside the project folder:
+AUTHOR
+PRADIP KUMAR VERMA
